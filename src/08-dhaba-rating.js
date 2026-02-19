@@ -46,16 +46,87 @@
  */
 export function createFilter(field, operator, value) {
   // Your code here
+  return function filter(obj) {
+    if (typeof obj !== "object" || obj === null) {
+      return false;
+    }
+
+    const fieldValue = obj[field];
+
+    switch (operator) {
+      case ">":
+        return fieldValue > value;
+
+      case "<":
+        return fieldValue < value;
+
+      case ">=":
+        return fieldValue >= value;
+
+      case "<=":
+        return fieldValue <= value;
+
+      case "===":
+        return fieldValue === value;
+
+      default:
+        return false; // unknown operator
+    }
+  };
 }
 
 export function createSorter(field, order = "asc") {
   // Your code here
+
+  return function (a, b) {
+    const valA = a[field];
+    const valB = b[field];
+
+    // If values are strings → use localeCompare
+    if (typeof valA === "string" && typeof valB === "string") {
+      return order === "asc"
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    }
+
+    // Otherwise assume numbers
+    return order === "asc" ? valA - valB : valB - valA;
+  };
 }
 
 export function createMapper(fields) {
   // Your code here
+  if (!Array.isArray(fields)) {
+    return () => ({});
+  }
+
+  return function (obj) {
+    if (typeof obj !== "object" || obj === null) {
+      return {};
+    }
+
+    const result = {};
+
+    for (const field of fields) {
+      if (field in obj) {
+        result[field] = obj[field];
+      }
+    }
+
+    return result;
+  };
 }
 
 export function applyOperations(data, ...operations) {
   // Your code here
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  return operations.reduce((acc, operation) => {
+    if (typeof operation === "function") {
+      return operation(acc);
+    }
+    return acc;
+  }, data);
 }

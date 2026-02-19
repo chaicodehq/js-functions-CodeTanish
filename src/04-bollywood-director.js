@@ -46,12 +46,78 @@
  */
 export function createDialogueWriter(genre) {
   // Your code here
+
+  let dialogTemplate = {
+    action: (hero, villain) =>
+      `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`,
+
+    romance: (hero, villain) =>
+      `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`,
+
+    comedy: (hero, villain) =>
+      `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`,
+
+    drama: (hero, villain) =>
+      `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`,
+  };
+  if (!dialogTemplate[genre]) return null;
+  function dialogTemplatefn(hero, villain) {
+
+    if(!hero || !villain ) return '...'
+
+    return dialogTemplate[genre](hero, villain)
+  }
+
+  return dialogTemplatefn;
 }
 
 export function createTicketPricer(basePrice) {
   // Your code here
+  if(!Number.isInteger(basePrice) || basePrice <= 0) return null
+
+  let seatPrices = {
+    gold: 1.5*basePrice,
+    silver: 1 * basePrice,
+    platinum: 2 * basePrice
+  }
+
+  function calTicketPrice(seatType, isWeekend = false) {
+    if(!seatPrices[seatType]) return null 
+
+
+    if(isWeekend) return seatPrices[seatType] * 1.3
+
+    return seatPrices[seatType]
+  }
+
+  return calTicketPrice
 }
 
 export function createRatingCalculator(weights) {
   // Your code here
+
+  function calScore (scores){
+    if (
+      typeof scores !== "object" ||
+      scores === null ||
+      Array.isArray(scores)
+    ) {
+      return null;
+    }
+
+    let total = 0;
+
+    for (const key in weights) {
+      if (
+        typeof weights[key] === "number" &&
+        typeof scores[key] === "number"
+      ) {
+        total += scores[key] * weights[key];
+      }
+    }
+
+    return Number(total.toFixed(1));
+  }
+
+  return typeof weights !== "object" || weights === null || Array.isArray(weights) ? null :  calScore
 }
